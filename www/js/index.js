@@ -1,4 +1,10 @@
-$( document ).delegate("#user-page", "pageshow", function() {
+$( document ).delegate("#user-page", "pageinit", function() {
+
+  if (is_set("_now")){
+    now = JSON.parse(get(get("_now")));
+    $("#now-description").text(now.description);
+    $.mobile.changePage("#now");
+  }
 
   if (is_not_set('_actual')){
     $("#idea").addClass("hide");
@@ -35,8 +41,10 @@ $( document ).delegate("#user-page", "pageshow", function() {
   });
 
   $( "#do" ).click(function( event ){
-    popup("do");
-    return false;
+    actual = JSON.parse(get(get("_actual")));
+    $("#now-description").text(actual.description);
+    set("_now", get("_actual"));
+    $.mobile.changePage("#now");
   });
 
   $( "#review" ).click(function( event ){
@@ -72,7 +80,20 @@ $( document ).delegate("#user-page", "pageshow", function() {
       $("#description").text("");
       $("#idea").addClass("hide");
     }
+  });
+});
 
-    return false;
+$( document ).delegate("#now", "pageinit", function() {
+
+  $( "#now-complete" ).click(function( event ){
+    remove("_now");
+    $("#now").dialog("close");
+    $("#delete").click();
+  });
+
+  $( "#now-delete" ).click(function( event ){
+    remove("_now");
+    $("#now").dialog("close");
+    $("#delete").click();
   });
 });

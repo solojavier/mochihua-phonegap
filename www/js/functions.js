@@ -16,6 +16,10 @@ var is_not_set = function(name){
   return storage.getItem(name) == null;
 };
 
+var is_set = function(name){
+  return storage.getItem(name) != null;
+};
+
 var idea = function(description, next){
   return JSON.stringify({
     description: description,
