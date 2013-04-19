@@ -1,5 +1,23 @@
 $( document ).delegate("#user-page", "pageinit", function() {
 
+  setInterval(function() {
+    if(is_not_set("_now")){
+      dates = JSON.parse(get("_dates"));
+
+      $.each(dates, function(i, date) {
+
+        if (new Date(date) - Date.now() < 0){
+          actual = JSON.parse(get(date));
+          $("#now-description").text(actual.description);
+          set("_now", date);
+          set("_scheduled", true);
+          $.mobile.changePage("#now");
+          return false;
+        }
+      });
+    }
+  }, 30000);
+
   if (is_set("_now")){
     now = JSON.parse(get(get("_now")));
     $("#now-description").text(now.description);
@@ -15,6 +33,9 @@ $( document ).delegate("#user-page", "pageinit", function() {
   if (is_not_set('_index')){
     set("_index", 1);
     set("_first", 1);
+  }
+  if (is_not_set("_dates")){
+    set("_dates", "[]");
   }
 
   $( "#collect-form" ).submit(function( event ){
@@ -85,15 +106,43 @@ $( document ).delegate("#user-page", "pageinit", function() {
 
 $( document ).delegate("#now", "pageinit", function() {
 
-  $( "#now-complete" ).click(function( event ){
+  $("#schedule").mobiscroll().datetime();
+
+  $( "#schedule" ).change(function( event ){
+    set($(this).val(), get(get("_now")));
+    dates = JSON.parse(get("_dates"));
+    dates.push($(this).val());
+    set("_dates", JSON.stringify(dates));
     remove("_now");
     $("#now").dialog("close");
     $("#delete").click();
   });
 
-  $( "#now-delete" ).click(function( event ){
-    remove("_now");
+  $( "#now-complete" ).click(function( event ){
     $("#now").dialog("close");
-    $("#delete").click();
+    if(is_set("_scheduled")){
+      remove(get("_now"));
+      remove("_scheduled");
+      dates = JSON.parse(get("_dates"));
+      dates.splice(dates.indexOf(get("_now")), 1);
+      set("_dates", JSON.stringify(dates));
+    }else{
+      $("#delete").click();
+    }
+    remove("_now");
+  });
+
+  $( "#now-delete" ).click(function( event ){
+    $("#now").dialog("close");
+    if(is_set("_scheduled")){
+      remove(get("_now"));
+      remove("_scheduled");
+      dates = JSON.parse(get("_dates"));
+      dates.splice(dates.indexOf(get("_now")), 1);
+      set("_dates", JSON.stringify(dates));
+    }else{
+      $("#delete").click();
+    }
+    remove("_now");
   });
 });
