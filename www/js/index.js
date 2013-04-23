@@ -8,11 +8,13 @@ $( document ).delegate("#user-page", "pageinit", function() {
 
         if (new Date(date) - Date.now() < 0){
           actual = JSON.parse(get(date));
-          $("#now-description").text(actual.description);
-          set("_now", date);
-          set("_scheduled", true);
-          $.mobile.changePage("#now");
-          return false;
+          if(actual != null){
+            $("#now-description").text(actual.description);
+            set("_now", date);
+            set("_scheduled", true);
+            $.mobile.changePage("#now");
+            return false;
+          }
         }
       });
     }
